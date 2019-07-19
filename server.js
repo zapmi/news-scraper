@@ -35,6 +35,14 @@ mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
 // Routes
 
+// $(".scrapeButton").click(function () {
+//     scrapeFunc();
+// });
+
+
+// function scrapeFunc() {
+
+
 // A GET route for scraping the echoJS website
 app.get("/scrape", function (req, res) {
     // First, we grab the body of the html with axios
@@ -45,7 +53,7 @@ app.get("/scrape", function (req, res) {
         // console.log(response.data)
 
         // Now, we grab every h2 within an article tag, and do the following:
-        $(".article").each(function (i, element) {
+        $(".title").each(function (i, element) {
             // Save an empty result object
             var result = {};
 
@@ -71,6 +79,8 @@ app.get("/scrape", function (req, res) {
         res.send("Scrape Complete");
     });
 });
+// }
+
 
 // Route for getting all Articles from the db
 app.get("/articles", function (req, res) {
@@ -120,6 +130,21 @@ app.post("/articles/:id", function (req, res) {
     // then find an article from the req.params.id
     // and update it's "note" property with the _id of the new note
 });
+
+//Route to delete note
+app.delete("/articles/:id", function (req, res) {
+    let id = req.params.id;
+
+    db.Note.remove({ _id: id })
+        .then(function (dbNote) {
+            db.Article.findOneAndUpdate({ "_id": req.params.article_id }, { $pull: { "notes": req.params.note_id } })
+            res.json({ message: "note removed!" });
+        })
+        .catch(function (err) {
+            res.json(err);
+        });
+});
+
 
 // Start the server
 app.listen(PORT, function () {
