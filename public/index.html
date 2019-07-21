@@ -5,13 +5,18 @@
   <meta charset="UTF-8">
   <title>Scraping With Mongoose</title>
   <style>
+    @font-face {
+    font-family: "Neon";
+    src: url("/assets/font/Neon.ttf") format("woff"), /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+    url("/assets/font/Neon.ttf") format('truetype');  /* Chrome 4+, Firefox 3.5, Opera 10+, Safari 3—5 */
+}
     body {
-      background-image: url("/images/newsScrape.jpg");
+      background-image: url("/assets/images/newsScrape.jpg");
       background-color: black;
       background-position: 50% 79%; 
       /* background-attachment: fixed; */
       color: whitesmoke;
-      font-family: Arial, Helvetica, sans-serif
+      font-family: Neon;
     }
 
     #wrapper {
@@ -24,7 +29,9 @@
 
     #articles {
       display: inline-block;
+      font-size: 24px;
       /* margin-top: 20px; */
+      /* font-family: Cyberthrone; */
       overflow: auto;
       width: 60%;
       height: 700px;

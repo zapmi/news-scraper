@@ -35,13 +35,6 @@ mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
 // Routes
 
-// $(".scrapeButton").click(function () {
-//     scrapeFunc();
-// });
-
-
-// function scrapeFunc() {
-
 
 // A GET route for scraping the echoJS website
 app.get("/scrape", function (req, res) {
@@ -133,17 +126,14 @@ app.post("/articles/:id", function (req, res) {
 });
 
 //Route to delete note
-app.delete("/articles/:id", function (req, res) {
-    let id = req.params.id;
-
-    db.Note.remove({ _id: id })
-        .then(function (dbNote) {
-            db.Article.findOneAndUpdate({ "_id": req.params.article_id }, { $pull: { "notes": req.params.note_id } })
-            res.json({ message: "note removed!" });
-        })
-        .catch(function (err) {
-            res.json(err);
-        });
+app.delete("/deleteNote/:article_id/:note_id", function (req, res) {
+    db.Note.findOneAndRemove({ "_id": req.params.note_id }).then(function (results) {
+        console.log(results);
+    }).then(function (data) {
+        db.Article.findOneAndUpdate({ "_id": req.params.article_id }, { $set: { 'note': '' } });
+    }).then(function (data) {
+        res.json(results);
+    }).catch(function (err) { res.json(err) });
 });
 
 
