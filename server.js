@@ -126,14 +126,17 @@ app.post("/articles/:id", function (req, res) {
 });
 
 //Route to delete note
-app.delete("/deleteNote/:article_id/:note_id", function (req, res) {
-    db.Note.findOneAndRemove({ "_id": req.params.note_id }).then(function (results) {
-        console.log(results);
-    }).then(function (data) {
-        db.Article.findOneAndUpdate({ "_id": req.params.article_id }, { $set: { 'note': '' } });
-    }).then(function (data) {
-        res.json(results);
-    }).catch(function (err) { res.json(err) });
+app.delete("/deletenote/:id", function (req, res) {
+    db.Note.remove(req.body)
+        .then(function (dbNote) {
+            return db.Article.findOneAndRemove({ "_id": req.params.id }, { $pull: { note: dbNote._id } });
+        })
+        .then(function (dbArticle) {
+            res.json(dbArticle);
+        })
+        .catch(function (err) {
+            res.json(err);
+        })
 });
 
 
