@@ -41,6 +41,7 @@ app.get("/scrape", function (req, res) {
     // First, we grab the body of the html with axios
     //
     db.Article.collection.drop();
+    db.Note.collection.drop();
     axios.get("https://www.macrumors.com/").then(function (response) {
         // Then, we load that into cheerio and save it to $ for a shorthand selector
         var $ = cheerio.load(response.data);
