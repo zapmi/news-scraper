@@ -10,6 +10,8 @@ var cheerio = require("cheerio");
 
 // Require all models
 var db = require("./models");
+var Note = require("./models/Note.js");
+var Article = require("./models/Article.js");
 
 var PORT = process.env.PORT || 3000;
 
@@ -107,28 +109,40 @@ app.get("/articles/:id", function (req, res) {
 
 });
 
-// Route for saving/updating an Article's associated Note
 app.post("/articles/:id", function (req, res) {
-    // TODO
-    // ====
-    db.Note.create(req.body)
-        .then(function (dbNote) {
-            return db.Article.findOneAndUpdate({ "_id": req.params.id }, { $push: { note: dbNote._id } }, { new: true });
-        })
-        .then(function (dbArticle) {
-            res.json(dbArticle);
-        })
-        .catch(function (err) {
-            res.json(err);
-        })
-    // save the new note that gets posted to the Notes collection
-    // then find an article from the req.params.id
-    // and update it's "note" property with the _id of the new note
+    // Create a new note and pass the req.body to the entry
+    var newNote = new Note(req.body);
+
+    // And save the new note the db
+    newNote.save(function (error, doc) {
+        // Log any errors
+        if (error) {
+            console.log(error);
+        }
+        // Otherwise
+        else {
+            // Use the article id to find and update it's note
+            Article.findOneAndUpdate({ "_id": req.params.id }, { "note": doc._id })
+                // Execute the above query
+                .exec(function (err, doc) {
+                    // Log any errors
+                    if (err) {
+                        console.log(err);
+                    }
+                    else {
+                        // Or send the document to the browser
+                        res.send(doc);
+                    }
+                });
+        }
+    });
 });
+
+
 
 //Route to delete note
 app.delete("/deletenote/:id", function (req, res) {
-    db.Note.remove(req.body)
+    Note.remove(req.body)
         .then(function (dbNote) {
             return db.Article.findOneAndRemove({ "_id": req.params.id }, { $pull: { note: dbNote._id } });
         })
